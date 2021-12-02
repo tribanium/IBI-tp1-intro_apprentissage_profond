@@ -1,1 +1,2 @@
-# IBI-tp1-intro_apprentissage_profond
+# IBI TP1 : Introduction à l'apprentissage profond
+
