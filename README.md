@@ -34,7 +34,7 @@ Le tenseur de biais  `b` est de taille 1*10 car il doit être de même taille qu
 
 ### Impact des hyperparamètres sur les performances
 
-Nous avons fait varier `eta` de 10^-2 à 10^-10 afin d'observer l'impact sur les performances. Nous avons obtenu les courbes suivantes :
+Nous avons fait varier `eta` de `1e-2` à `1e-10` afin d'observer l'impact sur les performances. Nous avons obtenu les courbes suivantes :
 
 
 
@@ -50,11 +50,13 @@ Nous avons tracé ici la performance maximale atteinte en fonction du taux d'app
 
 
 
+Lorsque nous testons le script avec les méthodes pytorch nous obtenons sans surprise les mêmes résultats.
+
 
 
 ## Partie 2 : Shallow Network
 
-
+Nous implémentons ici l'algorithme du perceptron multi-couches avec une couche cachée et une sortie linéaire
 
 
 
