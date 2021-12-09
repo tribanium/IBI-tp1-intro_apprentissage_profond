@@ -15,7 +15,7 @@ if __name__ == "__main__":
     nb_epochs = 10  # nombre de fois que la base de données sera lue
     eta = 0.00001  # taux d'apprentissage
 
-    eta_list = [1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10]
+    eta_list = [1e-4]
     results = []
 
     for index, eta in enumerate(eta_list):

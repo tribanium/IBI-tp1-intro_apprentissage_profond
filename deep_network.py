@@ -1,6 +1,8 @@
 import torch, numpy, gzip
 import matplotlib.pyplot as plt
 
+colors = ["tab:blue", "tab:orange", "tab:green"]
+
 
 def init_weights(m):
     if isinstance(m, torch.nn.Linear):
@@ -23,6 +25,7 @@ class NeuralNet:
         self.hidden_layers_units = hidden_layers_units
 
         self.accuracy = []
+        self.train_accuracy = []
 
         self.nb_hidden_layers = len(hidden_layers_units)
 
@@ -45,19 +48,21 @@ class NeuralNet:
             self.test_dataset, batch_size=1, shuffle=False
         )
 
-        # on initialise le modèle et ses poids
+        # On initialise le modèle et ses poids
         layers_list = []
         if self.nb_hidden_layers > 0:
             layers_list.append(
                 torch.nn.Linear(self.data_train.shape[1], hidden_layers_units[0])
             )
             for layer, layer_units in enumerate(hidden_layers_units):
+                # Si on n'est pas à la dernière couche :
                 if layer < self.nb_hidden_layers - 1:
                     layers_list.append(
                         torch.nn.Linear(
                             hidden_layers_units[layer], hidden_layers_units[layer + 1]
                         )
                     )
+                    layers_list.append(torch.nn.ReLU())
                 else:
                     layers_list.append(
                         torch.nn.Linear(
@@ -72,7 +77,7 @@ class NeuralNet:
         self.model = torch.nn.Sequential(*layers_list)
         self.model.apply(init_weights)
 
-        # on initialise l'optimiseur
+        # On initialise l'optimiseur
         self.loss_func = loss(reduction="sum")
         self.optim = optimizer(self.model.parameters(), lr=self.eta)
 
@@ -82,6 +87,7 @@ class NeuralNet:
         print("Training model...\n")
 
         for n in range(self.nb_epochs):
+            train_acc = 0.0
             # on lit toutes les données d'apprentissage
             for x, t in self.train_loader:
                 # on calcule la sortie du modèle
@@ -91,6 +97,8 @@ class NeuralNet:
                 loss.backward()
                 self.optim.step()
                 self.optim.zero_grad()
+                train_acc += (torch.argmax(y, 1) == torch.argmax(t, 1)).numpy().sum()
+            self.train_accuracy.append(train_acc / self.data_train.shape[0])
 
             # test du modèle (on évalue la progression pendant l'apprentissage)
             acc = 0.0
@@ -105,7 +113,7 @@ class NeuralNet:
             acc = acc[0]
             if n % 10 == 9:
                 print(
-                    f"Epoch {n}/{self.nb_epochs} - Accuracy : {acc / self.data_test.shape[0]}"
+                    f"Epoch {n}/{self.nb_epochs} | Test accuracy : {acc / self.data_test.shape[0]} | Train accuracy : {train_acc/self.data_train.shape[0]} "
                 )
             self.accuracy.append(acc / self.data_test.shape[0])
 
@@ -132,8 +140,8 @@ class Tests:
         optimizer=torch.optim.SGD,
         loss=torch.nn.MSELoss,
     ) -> None:
-        self.accuracy_eta = []
-        self.accuracy_layers = []
+        self.accuracy_eta = {"train": [], "test": []}
+        self.accuracy_layers = {"train": [], "test": []}
 
         self.batch_size = batch_size
         self.nb_epochs = nb_epochs
@@ -155,12 +163,21 @@ class Tests:
                 self.loss,
             )
             neuralnet.run()
-            self.accuracy_eta.append(neuralnet.accuracy)
+            self.accuracy_eta["test"].append(neuralnet.accuracy)
+            self.accuracy_eta["train"].append(neuralnet.train_accuracy)
 
         x = range(1, self.nb_epochs + 1)
         plt.figure()
         for i, eta in enumerate(eta_list):
-            plt.plot(x, self.accuracy_eta[i], label="{:.0e}".format(eta))
+            plt.plot(
+                x,
+                self.accuracy_eta["test"][i],
+                color=colors[i],
+                label="{:.0e}".format(eta),
+            )
+            plt.plot(
+                x, self.accuracy_eta["train"][i], color=colors[i], linestyle="dashed"
+            )
         plt.xlabel("Epoch")
         plt.ylabel("Accuracy")
         plt.xlim((1, self.nb_epochs))
@@ -172,7 +189,7 @@ class Tests:
 
     def test_layers(self, nb_layers):
         print("ITERATING OVER HIDDEN LAYERS UNITS...")
-        nb_units = [512, 128, 64, 32, 16]
+        nb_units = [1024, 256, 64, 16]
         plot_labels = []
         for i, unit in enumerate(nb_units[: 1 - nb_layers]):
             hidden_layers_units = [nb_units[i + k] for k in range(nb_layers)]
@@ -193,8 +210,12 @@ class Tests:
         for i, eta in enumerate(nb_units[: 1 - nb_layers]):
             plt.plot(
                 x,
-                self.accuracy_layers[i],
+                self.accuracy_layers["test"][i],
+                color=colors[i],
                 label=plot_labels[i],
+            )
+            plt.plot(
+                x, self.accuracy_layers["train"][i], color=colors[i], linestyle="dashed"
             )
         plt.xlabel("Epoch")
         plt.ylabel("Accuracy")
@@ -226,7 +247,6 @@ if __name__ == "__main__":
     # neuralnet.run()
     # neuralnet.plot_accuracy()
 
-    eta_list = [1e-2, 1e-3, 1e-4, 1e-5]
     tests = Tests(
         batch_size=batch_size,
         nb_epochs=nb_epochs,
@@ -234,5 +254,14 @@ if __name__ == "__main__":
         hidden_layers_units=hidden_layers_units,
         optimizer=optimizer,
     )
+
+    """ Testing learning rate """
+    # eta_list = [1e-2, 1e-3, 1e-4, 1e-5]
     # tests.test_eta(eta_list)
-    tests.test_layers(2)
+
+    """ Testing number of hidden layers and neurons """
+    tests.test_layers(3)
+
+    """ Testing initial weigths """
+
+    """ Testing mini batch size """
