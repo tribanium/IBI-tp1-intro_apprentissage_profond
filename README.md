@@ -38,13 +38,13 @@ Nous avons fait varier `eta` de `1e-2` à `1e-10` afin d'observer l'impact sur l
 
 
 
-<img src="./images/AccuracyVSepoch.png" height="400" />
+<img src="./images/perceptron/AccuracyVSepoch.png" height="400" />
 
 Cette figure montre bien qu'un taux d'apprentissage trop grand ne permet pas la convergence (cf `1e-2` où les mises à jour des poids sont trop grandes ce qui est assimilable à un modèle aléatoire) mais qu'un taux trop faible ne permet pas d'actualiser les poids lors de la descente de gradient (à partir de `1e-7` où nous observons une nette diminution des performances, et où pour des taux encore plus faibles, le modèle n'apprend simplement pas).
 
 
 
-<img src="./images/AccuracyVSLR.png" height="400" />
+<img src="./images/perceptron/AccuracyVSLR.png" height="400" />
 
 Nous avons tracé ici la performance maximale atteinte en fonction du taux d'apprentissage en échelle log. Nous constatons que la valeur optimale du taux d'aprentissage se situe dans notre cas entre `1e-5` et `1e-3`.
 
