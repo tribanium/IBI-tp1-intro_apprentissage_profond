@@ -189,7 +189,7 @@ class Tests:
 
     def test_layers(self, nb_layers):
         print("ITERATING OVER HIDDEN LAYERS UNITS...")
-        nb_units = [1024, 256, 64, 16]
+        nb_units = [1000, 500, 250, 60, 30]
         plot_labels = []
         for i, unit in enumerate(nb_units[: 1 - nb_layers]):
             hidden_layers_units = [nb_units[i + k] for k in range(nb_layers)]
@@ -226,12 +226,17 @@ class Tests:
         )
         plt.show()
 
+    # TODO : test initialisation des poids
+
+    # TODO : test taille du mini batch
+
+    # TODO test cross entropy + softmax
+
 
 if __name__ == "__main__":
     batch_size = 5
     nb_epochs = 50
     eta = 1e-3
-    # hidden_layers_units = [512, 256, 128, 64]
     hidden_layers_units = [64, 32]
     optimizer = torch.optim.SGD
     # loss = torch.nn.CrossEntropyLoss
