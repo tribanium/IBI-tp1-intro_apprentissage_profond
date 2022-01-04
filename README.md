@@ -56,7 +56,7 @@ Lorsque nous testons le script avec les méthodes pytorch nous obtenons sans sur
 
 ## Partie 2 : Shallow Network
 
-Nous implémentons ici l'algorithme du perceptron multi-couches avec une couche cachée et une sortie linéaire
+Dans cette partie, nous avons implémenté un réseau de neurones fully-connected avec une couche cachée. Nous avons implémenté ce réseau de neurones de deux façons : une en utilisant les tenseurs et en implémentant la back-propagation du gradient à la main, et une autre utilisant l'interface de haut-niveau fournie par Pytorch. La version implémentée à la main est appelée `shallow_network_barebone.py`, la version utiliant les outils de Pytorch est appelée `shallow_network_pytorch.py`.
 
 
 
